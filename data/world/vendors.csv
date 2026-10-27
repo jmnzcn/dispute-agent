@@ -1,0 +1,9 @@
+vendor_code,vendor_name,currency,file_format,header_style,money_style,date_style,invoice_style,invoice_prefix,junk_rows
+C9REY,Juniper Decor Group LLC,USD,parquet,title,plain,us,NUM,XD,True
+J927R,Prairie Imports Group LLC,USD,parquet,title,plain,iso,INV,YP,False
+GR3ND,Willow Outfitters LLC,USD,xlsx,camel,plain,iso,INV,CX,True
+W4LUG,Cedar Supply Trading Co.,JPY,csv,title,plain,iso,NUM,ZB,False
+UROC5,Coastal Home Inc.,USD,csv,snake,symbol,us,PFX,SR,True
+YX7YP,Blue Goods Trading Co.,CAD,parquet,title,plain,iso,INV,QB,False
+CM4VG,Maple Outfitters Group LLC,USD,parquet,title,plain,us,INV,CD,False
+IPQDV,Silver Gift Trading Co.,MXN,parquet,camel,plain,us,NUM,BJ,True

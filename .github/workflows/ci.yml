@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: policy parity, tools, guardrails and harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -e ".[dev,claude]"
+      - run: ruff check src tests
+      - run: pytest -q
+      - name: scripted control run scores 100 % with no false filings
+        run: |
+          dispute-agent run --backend scripted --out /tmp/scripted.jsonl
+          dispute-agent score /tmp/scripted.jsonl --out /tmp/score.json
+          python -c "import json; s=json.load(open('/tmp/score.json'))['scripted']; assert s['agent']['exact_pct']==100.0 and s['system']['false_filings']==0, s"

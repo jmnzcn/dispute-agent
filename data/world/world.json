@@ -1,0 +1,32 @@
+{
+  "config": {
+    "vendors": 8,
+    "po_lines": 30000,
+    "seed": 2031,
+    "start": "2025-03-01",
+    "end": "2026-06-30",
+    "noise": 1.0
+  },
+  "policy": {
+    "as_of": "2026-07-31",
+    "deduction_window_days": 365,
+    "payment_window_days": 365,
+    "payment_terms_days": 60,
+    "payment_grace_days": 30,
+    "fx_tolerance": 0.005,
+    "payment_tolerance_cents": 100,
+    "duplicate_window_days": 120,
+    "min_suffix_digits": 4,
+    "urgent_days": 30
+  },
+  "rows": {
+    "purchase_orders": 25409,
+    "shipments": 3636,
+    "proof_of_delivery": 3421,
+    "invoices": 25409,
+    "remittances": 3346,
+    "deductions": 2633
+  },
+  "observed_rows_total": 63854,
+  "truth_rows": 2628
+}
