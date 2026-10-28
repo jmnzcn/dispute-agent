@@ -7,6 +7,7 @@ guardrails, measured against known answers.**
 ![Claude](https://img.shields.io/badge/agent-Claude%20Opus%205.5%20%7C%20Haiku%205.5-D97757)
 ![MCP](https://img.shields.io/badge/tools-MCP%20server-1F6FEB)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB)
+![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-orange)
 
 **[Interactive results and every agent trace →](https://jmnzcn.github.io/dispute-agent/)**
 
@@ -131,4 +132,9 @@ guardrails escalated it. That run is not in the results table.
 
 ## License
 
-MIT
+**[PolyForm Noncommercial 1.0.0](LICENSE).** Free to read, study, run and modify for noncommercial
+purposes: personal projects, research, education, and evaluating it for hire. **Any commercial use,
+including running it on vendors' deductions as a service or product, needs a commercial license:**
+[neyfred@gmail.com](mailto:neyfred@gmail.com).
+
+Versions up to commit `9a76b4c` (2026-10-27) were published under the MIT License.

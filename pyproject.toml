@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "An AI agent that investigates Amazon vendor deductions and drafts disputes, with deterministic guardrails and evals against known answers"
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = { text = "PolyForm-Noncommercial-1.0.0" }
 authors = [{ name = "Ney Fred Jiménez Campos" }]
 dependencies = [
   "vendor-recovery-engine @ git+https://github.com/jmnzcn/vendor-recovery-engine",
