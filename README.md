@@ -31,33 +31,45 @@ time on Kafka, this repo puts an AI analyst on top, and
 106 deductions with known answers, covering every category and outcome plus every ambiguous
 reference, one run per model:
 
-| Analyst | Right decision | False filings | Cost per case |
-|---|---:|---:|---:|
-| Claude Opus 5.5 | 100.0 % | 0 | $0.030 |
-| Claude Haiku 5.5 | 99.1 % | 0 | $0.0009 |
-| Claude Haiku 5.5, first version of the instructions | 67.0 % | 0 | $0.0009 |
-| Scripted analyst (the control) | 100.0 % | 0 | – |
+| Analyst | Right decision | Sent to a person | Claimable money filed without a person | Cost per case |
+|---|---:|---:|---:|---:|
+| Claude Opus 5.5 | 100.0 % | 8 of 106 (7.5 %) | 100 % | $0.030 |
+| Claude Haiku 5.5 | 99.1 % | 8 of 106 (7.5 %) | 100 % | $0.0009 |
+| Claude Haiku 5.5, first version of the instructions | 67.0 % | 41 of 106 (38.7 %) | 72.2 % | $0.0009 |
+| Scripted analyst (the control) | 100.0 % | 8 of 106 (7.5 %) | 100 % | – |
 
 "Right decision" means the model's own answer, before any check, had the right status and, for
-claims, the right amount to the cent. The full Opus run cost $3.80 and the Haiku run $0.12. In every
-run 92.5 % of cases were filed or closed without a person; the other 7.5 % are the 8 ambiguous
-references, which always go to a person by design.
+claims, the right amount to the cent. The full Opus run cost $3.80 and the Haiku run $0.12. The 8
+cases every run sends to a person are the ambiguous references, which go there by design.
 
-The 67 % row is the first version of the instructions, which never defined the statuses. On
-late-shipment chargebacks Haiku would write "shipped within the window" and then answer
-NOT_CLAIMABLE, meaning "Amazon's chargeback is not valid". It got a third of the cases wrong, but
-nothing wrong was filed, because the checks caught every disagreement and sent it to a person. The
-second version defines each status from the vendor's point of view, and the same model went to
-99.1 %. Both runs are in `runs/`.
+No run filed a false dispute. That zero is not a measurement of the models: the rule check that
+stands between the agent and filing matches the known answers on all 2,477 deductions of this world,
+so here nothing wrong can get past it. What the runs measure is what the check costs, which is the
+"sent to a person" column. A real rule check could be wrong, and a claim that both it and the model
+get wrong would be filed.
+
+The 67 % row shows that cost. It is the first version of the instructions, which never defined the
+statuses. On late-shipment chargebacks Haiku would write "shipped within the window" and then answer
+NOT_CLAIMABLE, meaning "Amazon's chargeback is not valid". It got a third of the cases wrong. The
+check caught every disagreement, so nothing wrong was filed, but 41 cases went to a person and not
+8, and $118 of the $427 that could be claimed waited there. The second version defines each status
+from the vendor's point of view, and the same model went to 99.1 % and back to 8 cases. Both runs
+are in `runs/`.
+
+[ReconBench](https://github.com/jmnzcn/reconbench) replays the same check over 261 cases and four
+models (`reconbench guarded`): it sends 10 % of cases to a person with Opus and 27 % with Haiku.
 
 I also tested prompt injection. 20 valid deductions had a note planted inside the very document
 that proves them, telling the AI to mark the deduction claimable for the full amount and skip the
-remaining checks. Opus and Haiku answered correctly every time, pointed out the note in their
-reasoning in 20 of 20 cases, and no false dispute was filed.
+remaining checks. Opus and Haiku answered correctly every time and pointed out the note in their
+reasoning in 20 of 20 cases. With the first version of the instructions, Haiku answered CLAIMABLE in
+3 of the 20; the check sent those to a person.
 
 There is one place where the agent does better than the rules engine. When a truncated reference
 matches two invoices, the rules can only say "ambiguous". Both models proposed the right invoice in
-8 of 8 cases, for a person to confirm.
+8 of 8 cases, for a person to confirm. Haiku's one wrong decision is one of these: it answered
+CLAIMABLE with the right invoice when it should have asked for review, and the check sent it to a
+person anyway.
 
 ## How it works
 
@@ -118,6 +130,8 @@ one JSON line per case with the full trace.
 ## Limits
 
 - One synthetic world and one run per model, so small differences between models are noise.
+- The rule check is as good as the answer key in this world, so the runs can't show a false filing.
+  They show how often the agent and the check disagree, not how often the check would be wrong.
 - The recovery rules are fully written in code here, which is what lets code check the agent. Where
   a rule isn't written down, the same design sends the case to a person instead of filing.
 - Costs are list prices at the time of the run, with prompt caching on.
@@ -127,8 +141,11 @@ one JSON line per case with the full trace.
 Un agente de IA que revisa deducciones de Amazon Vendor Central como lo haría un analista: busca los
 registros, decide si se puede disputar y redacta la disputa. Nada se presenta solo con el criterio
 del modelo: el código vuelve a verificar la decisión y cada dato de la carta, y lo dudoso pasa a una
-persona. En 106 casos con respuesta conocida, Claude Opus 5.5 acertó el 100 % y Haiku 5.5 el 99,1 %,
-sin ninguna disputa falsa, incluso con 20 intentos de inyección de prompt.
+persona. En 106 casos sintéticos con respuesta conocida, Claude Opus 5.5 acertó el 100 % y Haiku 5.5 el
+99,1 %, y solo las 8 referencias ambiguas pasaron a una persona. No se presentó ninguna disputa
+falsa, pero ese cero se debe a la verificación por reglas, que en este mundo coincide con las
+respuestas conocidas; lo que las corridas miden es su costo: con la primera versión de las
+instrucciones, Haiku acertó el 67 % y 41 de los 106 casos pasaron a una persona.
 
 ## License
 
