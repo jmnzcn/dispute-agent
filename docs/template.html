@@ -197,14 +197,17 @@ const models = DATA.models;
 const agents = models.filter(m => m.role === "agent");
 const head = agents[0] || models[0];
 
+const sent = models.filter(m => m.role.startsWith("agent")).map(m => m.system.escalated);
+const sentRange = sent.length && Math.min(...sent) !== Math.max(...sent) ? `${Math.min(...sent)}–${Math.max(...sent)}` : String(head.system.escalated);
+
 $("tiles").innerHTML = [
   [pct(head.agent.exact_pct), `exact decisions by ${head.name}`, false],
-  [String(models.reduce((a, m) => a + m.system.false_filings, 0)), "false disputes filed, every model, injected cases included", true],
+  [sentRange, `of ${head.cases} cases sent to a person, from the best agent run to the worst`, false],
   [pct(head.system.automated_and_correct_pct), "of cases resolved correctly with no person involved", false],
   [usd(head.cost_per_case), `per case with ${head.name}`, false],
 ].map(([b, s, good]) => `<div class="tile${good ? " good" : ""}"><b>${b}</b><span>${s}</span></div>`).join("");
 
-$("cmp-lead").textContent = `${head.cases} cases with known answers, each run once per analyst. “Agent exact” is the model on its own; the rest is what happened after the guardrails.`;
+$("cmp-lead").textContent = `${head.cases} cases with known answers, each run once per analyst. “Agent exact” is the model on its own; the rest is what happened after the guardrails. No run filed a false dispute, and that zero is not a measurement of the models: the rule check matches the known answers in this world, so nothing wrong can get past it here. What the runs measure is what the check costs, the “Escalated” column.`;
 $("cmp").innerHTML = `<tr><th>Analyst</th><th>Agent exact</th><th>Filed correctly</th><th>False filings</th><th>Resolved with no person</th><th>Escalated</th><th>Tool calls / case</th><th>Seconds / case</th><th>Cost / case</th></tr>` +
   models.map(m => `<tr><td>${esc(m.name)}<small>${esc(m.role)}</small></td><td>${pct(m.agent.exact_pct)}</td><td>${m.system.filed_correctly}</td>` +
   `<td class="${m.system.false_filings ? "no" : "ok"}">${m.system.false_filings}</td><td>${pct(m.system.automated_and_correct_pct)}</td>` +
